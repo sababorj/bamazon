@@ -45,33 +45,36 @@ function placeOrder() {
             if (err) throw err;
             if (data.length > 0) {
                 purchase(data[0].stockQuantity)
-                } else {
-                    // else happends if user type an item which is not in DB
-                    console.log('Sorry! This item is not among our products')
-                    askAgain()
-                }    
+            } else {
+                // else happends if user type an item which is not in DB
+                console.log('Sorry! This item is not among our products')
+                askAgain()
+            }
         })
+
         function purchase(stockQuantity) {
-            if(stockQuantity < res.quantity){
+            if (stockQuantity < res.quantity) {
                 console.log('Sorry! Insufficient quantity!');
                 askAgain();
             } else {
-            var newQuantity = stockQuantity - res.quantity;
-            connection.query('SELECT price from products WHERE productName = ?;', [res.item.trim()],(err, data) => {
-                if (err) throw err;
-                balance += (data[0].price * res.quantity);
-                console.log(`your total shopping balence is now $${balance}`);
-                connection.query(`UPDATE products SET stockQuantity = ? WHERE productName = ?;`, [newQuantity,res.item.trim()], (err, data) => {
+                var newQuantity = stockQuantity - res.quantity;
+                connection.query('SELECT price from products WHERE productName = ?;', [res.item.trim()], (err, data) => {
                     if (err) throw err;
-                    askAgain();
+                    // calculate the user balance
+                    balance += (data[0].price * res.quantity);
+                    console.log(`your total shopping balence is now $${balance}`);
+                    // update the database
+                    connection.query(`UPDATE products SET stockQuantity = ? WHERE productName = ?;`, [newQuantity, res.item.trim()], (err, data) => {
+                        if (err) throw err;
+                        askAgain();
 
-            }) 
-            })
-        }
+                    })
+                })
+            }
         }
     })
     {
-        // this function takes care of placing more than one item order
+        // this function will enable placing multipule orders
         function askAgain() {
             inquirer.prompt([{
                 message: 'Would you like to continue shopping?',
@@ -79,9 +82,12 @@ function placeOrder() {
                 default: 'Yes',
                 name: 'chooseAgain'
             }]).then((res) => {
+                // place another order
                 if (res.chooseAgain) {
                     placeOrder()
-                } else {
+                }
+                // finishing the shopping process
+                else {
                     (balance > 0) ? console.log(`We appriciate your bussiness of $${balance}, goodbye!`) : console.log(`See you next time, goodbye!`);
                     connection.end();
                 }
