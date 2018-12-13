@@ -40,27 +40,54 @@ function placeOrder() {
     },
     {
         message: 'How many?',
-        name: 'quantity'
-    }]).then((res)=> {
-        connection.query('SELECT stockQuantity FROM products WHERE productName = ?',[res.item.trim()], (res,data)=>{
-            if(data.length>0) {
-            (data[0].stockQuantity > res.quantity) ? calculateBalence : 
-                // else happends if user type an item which is not in DB
-            } else {
-                inquirer.prompt([{
-                    message: 'the item is not among our products would you like to choose another item?',
-                    type: 'confirm',
-                    default: 'Yes',
-                    name: 'chooseAgain'
-                }]).then((res)=> {
-                    if(res.chooseAgain){
-                        placeOrder()
-                    } else {
-                        console.log(`your total balence is ${balance}, goodbye!`);
-                        connection.end();
-                    }
-                })
-            }  
+        name: 'quantity',
+        validate: quantity => parseInt(quantity)
+    }]).then((res) => {
+        connection.query('SELECT stockQuantity FROM products WHERE productName = ?', [res.item.trim()], (err, data) => {
+            if (err) throw err;
+            if (data.length > 0) {
+                purchase(data[0].stockQuantity)
+                } else {
+                    // else happends if user type an item which is not in DB
+                    console.log('The item is not among our products')
+                    askAgain()
+                }    
         })
+        function purchase(stockQuantity) {
+            if(stockQuantity < res.quantity){
+                console.log('Sorry, Insufficient quantity!');
+                askAgain();
+            } else {
+            var newQuantity = stockQuantity - res.quantity;
+            connection.query('SELECT price from ??', ['products'],(err, data) => {
+                if (err) throw err;
+                balance += (data[0].price * res.quantity);
+                console.log(balance)
+                connection.query(`UPDATE products SET stockQuantity = ? WHERE productName = ?;`, [newQuantity,res.item.trim()], (err, data) => {
+                    if (err) throw err;
+                    askAgain();
+
+            }) 
+            })
+        }
+        }
     })
+    {
+        // this function takes care of placing more than one item order
+        function askAgain() {
+            inquirer.prompt([{
+                message: 'Would you like to continue shopping?',
+                type: 'confirm',
+                default: 'Yes',
+                name: 'chooseAgain'
+            }]).then((res) => {
+                if (res.chooseAgain) {
+                    placeOrder()
+                } else {
+                    console.log(`your total balence is ${balance}, goodbye!`);
+                    connection.end();
+                }
+            })
+        }
+    }
 }
