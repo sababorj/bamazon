@@ -60,7 +60,7 @@ function placeOrder() {
             connection.query('SELECT price from products WHERE productName = ?;', [res.item.trim()],(err, data) => {
                 if (err) throw err;
                 balance += (data[0].price * res.quantity);
-                console.log(`your total shopping balence is ${balance}`);
+                console.log(`your total shopping balence is now $${balance}`);
                 connection.query(`UPDATE products SET stockQuantity = ? WHERE productName = ?;`, [newQuantity,res.item.trim()], (err, data) => {
                     if (err) throw err;
                     askAgain();
@@ -82,7 +82,7 @@ function placeOrder() {
                 if (res.chooseAgain) {
                     placeOrder()
                 } else {
-                    console.log(`We appriciate your bussiness ${balance}, goodbye!`);
+                    (balance > 0) ? console.log(`We appriciate your bussiness of $${balance}, goodbye!`) : console.log(`See you next time, goodbye!`);
                     connection.end();
                 }
             })
