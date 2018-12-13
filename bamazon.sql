@@ -22,7 +22,7 @@ Values ('jacket', 'Men Cloth', 99.99, 1000),
 ('Pot Set','Kitchen Equipment', 200.50, 76),
 ('Curtain','Home Equipment', 200.50, 76),
 ('Curpet','Home Equipment', 340.80, 80),
-('Shoes', 'Women Cloth',109.98, 100),
+('Hight Heel Shoes', 'Women Cloth',109.98, 100),
 ('Dress', 'Women Cloth',900.98, 10);
 
 -- make sure we have only the data we have inserted 
