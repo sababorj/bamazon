@@ -12,13 +12,11 @@ var connection = mysql.createConnection({
     database: 'bamazon'
 })
 
-// Wglobal variable to keep the total balance of the customer 
+// global variable to keep the total balance of the customer 
 var balance = 0;
-// When the connection is on show the products
+// when the connection is on show the products
 connection.connect((err) => {
-    var balance = 0;
     if (err) throw err;
-    console.log(`connection ID: ${connection.threadId}`);
     console.log('Greeting, here is the list of our products')
     showProduct();
 })
@@ -41,7 +39,7 @@ function placeOrder() {
     {
         message: 'How many?',
         name: 'quantity',
-        validate: quantity => parseInt(quantity)
+        // validate: guess => typeof(parseInt(guess)) === 'number'
     }]).then((res) => {
         connection.query('SELECT stockQuantity FROM products WHERE productName = ?', [res.item.trim()], (err, data) => {
             if (err) throw err;
@@ -49,20 +47,20 @@ function placeOrder() {
                 purchase(data[0].stockQuantity)
                 } else {
                     // else happends if user type an item which is not in DB
-                    console.log('The item is not among our products')
+                    console.log('Sorry! This item is not among our products')
                     askAgain()
                 }    
         })
         function purchase(stockQuantity) {
             if(stockQuantity < res.quantity){
-                console.log('Sorry, Insufficient quantity!');
+                console.log('Sorry! Insufficient quantity!');
                 askAgain();
             } else {
             var newQuantity = stockQuantity - res.quantity;
-            connection.query('SELECT price from ??', ['products'],(err, data) => {
+            connection.query('SELECT price from products WHERE productName = ?;', [res.item.trim()],(err, data) => {
                 if (err) throw err;
                 balance += (data[0].price * res.quantity);
-                console.log(balance)
+                console.log(`your total shopping balence is ${balance}`);
                 connection.query(`UPDATE products SET stockQuantity = ? WHERE productName = ?;`, [newQuantity,res.item.trim()], (err, data) => {
                     if (err) throw err;
                     askAgain();
@@ -84,7 +82,7 @@ function placeOrder() {
                 if (res.chooseAgain) {
                     placeOrder()
                 } else {
-                    console.log(`your total balence is ${balance}, goodbye!`);
+                    console.log(`We appriciate your bussiness ${balance}, goodbye!`);
                     connection.end();
                 }
             })
