@@ -1,16 +1,6 @@
-var mysql = require('mysql');
 var inquirer = require('inquirer');
-require('dotenv').config();
 require('console.table');
-
-// initate the connection to the database
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: process.env.PASSWORD,
-    port: 3306,
-    database: 'bamazon'
-})
+var connection = require('./mysql');
 
 // global variable to keep the total balance of the customer 
 var balance = 0;
@@ -39,7 +29,7 @@ function placeOrder() {
     {
         message: 'How many?',
         name: 'quantity',
-        // validate: guess => typeof(parseInt(guess)) === 'number'
+        validate: guess => !!parseInt(guess)
     }]).then((res) => {
         connection.query('SELECT stockQuantity FROM products WHERE productName = ?', [res.item.trim()], (err, data) => {
             if (err) throw err;
