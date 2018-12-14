@@ -29,7 +29,7 @@ function placeOrder() {
     {
         message: 'How many?',
         name: 'quantity',
-        validate: guess => !!parseInt(guess)
+        validate: input => !!parseInt(input)
     }]).then((res) => {
         connection.query('SELECT stockQuantity FROM products WHERE productName = ?', [res.item.trim()], (err, data) => {
             if (err) throw err;

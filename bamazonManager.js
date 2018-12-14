@@ -59,7 +59,7 @@ function viewProducts() {
 
 // list all items with an inventory count lower than five.
 function lowInventory() {
-    conncection.query('SELECT productName , stockQuantity FROM ?? WHERE stockQuantity < 5', ['products'], (err, data) => {
+    conncection.query('SELECT itemID, productName , stockQuantity FROM ?? WHERE stockQuantity < 5', ['products'], (err, data) => {
         if (err) throw err;
         if (data.length > 0) {
             console.table(data)
@@ -72,8 +72,30 @@ function lowInventory() {
 
 // let the manager add more of any item currently in the store.
 function addToInventory() {
-    console.log('addToInventory');
-    askAgain();
+    inquirer.prompt([{
+        message: "Please provide the product name you would like to add to the invetory:",
+        name: 'item',
+    }, {
+        message: "How many of this item would you like to add?",
+        name: "quantity",
+        validate: input => !!parseInt(input)
+    }]).then((res) => {
+        conncection.query('SELECT stockQuantity FROM products WHERE productName = ?', [res.item.trim()], (err, data) => {
+            if (err) throw err
+            if (data.length > 0) {
+                var newQuantity = parseInt(res.quantity) + data[0].stockQuantity;
+                var updatedItem = res.item.trim();
+                conncection.query('UPDATE products SET stockQuantity = ? WHERE productName = ?;', [newQuantity, updatedItem], (err, data) => {
+                    if (err) throw err;
+                    console.log(`Item ${updatedItem}'s quantity is now ${newQuantity}`)
+                    askAgain();
+                })
+            } else {
+                console.log('This item is not among our products');
+                askAgain();
+            }
+        })
+    })
 }
 
 // allow the manager to add a completely new product to the store.
