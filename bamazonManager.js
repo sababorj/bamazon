@@ -110,7 +110,7 @@ function AddProduct() {
     }, {
         message: "Product price?",
         name: 'price',
-        validate: input => !!parseFloat(input) && (parseFloat(input) + '').length === input.length
+        validate: input => !!parseFloat(input) && (parseFloat(input) + '').length === input.length 
     }, {
         message: "Product quantity?",
         name: 'quantity',
@@ -127,7 +127,7 @@ function AddProduct() {
                 conncection.query('UPDATE ?? SET stockQuantity = ? , price = ?,  department_name =  ?  Where productName = ?;;', ['products', quantity, price,depart,name], (err, data) => {
                     if (err) throw err;
                     if (data.changedRows > 0) { console.log(`Item ${name} was already in the system! it is now updated `) }
-                    askAgain();
+                    // askAgain();
                 })
             } else {
                 // create new item
