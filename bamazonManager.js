@@ -87,7 +87,7 @@ function addToInventory() {
                 var updatedItem = res.item.trim();
                 conncection.query('UPDATE products SET stockQuantity = ? WHERE productName = ?;', [newQuantity, updatedItem], (err, data) => {
                     if (err) throw err;
-                    if(data) {console.log(`Item ${updatedItem}'s quantity is now ${newQuantity}`)}
+                    if (data.changedRows > 0) { console.log(`Item ${updatedItem}'s quantity is now ${newQuantity}`) }
                     askAgain();
                 })
             } else {
@@ -104,26 +104,38 @@ function AddProduct() {
     inquirer.prompt([{
         message: "Product Name?",
         name: 'item'
-    },{
+    }, {
         message: "Product category or department?",
         name: 'department'
-    },{
+    }, {
         message: "Product price?",
         name: 'price',
-        validate: input => !!parseFloat(input)
-    },{
+        validate: input => !!parseFloat(input) && (parseFloat(input) + '').length === input.length
+    }, {
         message: "Product quantity?",
         name: 'quantity',
-        validate: input => !!parseFloat(input)
-    }]).then( (res) => {
+        validate: input => !!parseInt(input)
+    }]).then((res) => {
         var name = res.item;
         var depart = res.department;
         var price = parseFloat(res.price);
         var quantity = parseInt(res.quantity);
-        conncection.query('INSERT INTO products (productName, department_name, price, stockQuantity) VALUES (?, ?, ?, ?);', [name, depart, price, quantity], (err , data) => {
+        conncection.query('SELECT * FROM ?? WHERE productName = ?', ['products', name], (err, data) => {
             if (err) throw err;
-            if (data) { console.log(`${name} is now in the inventory`)}
-            askAgain();
+            if (data.length > 0) {
+                // if this item is already in the system update that one
+
+
+
+                
+            } else {
+                // create new item
+                conncection.query('INSERT INTO ?? (productName, department_name, price, stockQuantity) VALUES (?, ?, ?, ?);', ['products', name, depart, price, quantity], (err, data) => {
+                    if (err) throw err;
+                    if (data) { console.log(`${name} is now in the inventory`) }
+                    askAgain();
+                })
+            }
         })
     })
 }
