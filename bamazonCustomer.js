@@ -7,7 +7,7 @@ var balance = 0;
 // when the connection is on show the products
 connection.connect((err) => {
     if (err) throw err;
-    console.log('Greeting, here is the list of our products')
+    console.log('Greeting valueable customer, here is the list of our products')
     showProduct();
 })
 
