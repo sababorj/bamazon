@@ -124,10 +124,11 @@ function AddProduct() {
             if (err) throw err;
             if (data.length > 0) {
                 // if this item is already in the system update that one
-
-
-
-                
+                conncection.query('UPDATE ?? SET stockQuantity = ? , price = ?,  department_name =  ?  Where productName = ?;;', ['products', quantity, price,depart,name], (err, data) => {
+                    if (err) throw err;
+                    if (data.changedRows > 0) { console.log(`Item ${name} was already in the system! it is now updated `) }
+                    askAgain();
+                })
             } else {
                 // create new item
                 conncection.query('INSERT INTO ?? (productName, department_name, price, stockQuantity) VALUES (?, ?, ?, ?);', ['products', name, depart, price, quantity], (err, data) => {
