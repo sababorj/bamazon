@@ -87,7 +87,7 @@ function addToInventory() {
                 var updatedItem = res.item.trim();
                 conncection.query('UPDATE products SET stockQuantity = ? WHERE productName = ?;', [newQuantity, updatedItem], (err, data) => {
                     if (err) throw err;
-                    console.log(`Item ${updatedItem}'s quantity is now ${newQuantity}`)
+                    if(data) {console.log(`Item ${updatedItem}'s quantity is now ${newQuantity}`)}
                     askAgain();
                 })
             } else {
@@ -100,6 +100,30 @@ function addToInventory() {
 
 // allow the manager to add a completely new product to the store.
 function AddProduct() {
-    console.log('AddProduct');
-    askAgain();
+    console.log('Please provide the product information:')
+    inquirer.prompt([{
+        message: "Product Name?",
+        name: 'item'
+    },{
+        message: "Product category or department?",
+        name: 'department'
+    },{
+        message: "Product price?",
+        name: 'price',
+        validate: input => !!parseFloat(input)
+    },{
+        message: "Product quantity?",
+        name: 'quantity',
+        validate: input => !!parseFloat(input)
+    }]).then( (res) => {
+        var name = res.item;
+        var depart = res.department;
+        var price = parseFloat(res.price);
+        var quantity = parseInt(res.quantity);
+        conncection.query('INSERT INTO products (productName, department_name, price, stockQuantity) VALUES (?, ?, ?, ?);', [name, depart, price, quantity], (err , data) => {
+            if (err) throw err;
+            if (data) { console.log(`${name} is now in the inventory`)}
+            askAgain();
+        })
+    })
 }
