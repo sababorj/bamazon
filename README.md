@@ -5,13 +5,13 @@ Bamazan then provides two main application:
 1. bamazonCustomer 
 2. bamazonManagers:
 
-######``` node bamazonCustomer.js ``` :
+###### ``` node bamazonCustomer.js ``` :
 Application will first display all of the items available for sale. Then prompt users to place the order by providing product name and the quantity. 
 If there is enough product in the store user is able to buy and their balance will be calculated accordingly. After placing an order customer will be prompt to chose either leaving or placing another order.
 
 ![Customer](/images/Customer.png)
 
-######``` node bamazonMAnager.js ``` :
+###### ``` node bamazonMAnager.js ``` :
 Bamazon will then provide you with the following command options : 
 * View Products for Sale ----->> provides the list of inventory
 *  View Low Inventory ----->> provides the list of items in inventory which have less than 5 quantity.
